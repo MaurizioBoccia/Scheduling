@@ -89,16 +89,16 @@ class GeneticAlg():
 
     def Elite(self, NumElite):
         
-        Elite = []
+        EliteArray = []
         val = []
         for i in self.Population:
                 val.append(i.Fitness)
         idbest = numpy.argsort(val)
         
         for i in range(nelite):
-            Elite.append(idbest[i])
+            EliteArray.append(idbest[i])
 
-        return Elite
+        return EliteArray
 
     def Crossover(self,genitore1,genitore2):
 
@@ -265,25 +265,36 @@ class GeneticAlg():
         for i in range(1, len(self.Population)) :
             FitnessCum.append(FitnessCum[i-1] + self.Population[i].Fitness)
 
-        # individua moribondo 1 e lo sostituisce con figlio 1
-        first = random.random() * SumFitness
+        EliteArray = self.Elite(self.NumElite)
 
-        found = False
-        if first <= FitnessCum[0] :
-            self.Population[0] = figlio1
-            if figlio1.Fitness < self.BestCandidateFitness:
-                self.BestCandidateInd = 0
-                self.BestCandidateFitness = figlio1.Fitness   
-            found = True
-        i = 1
-        while not found :
-            if first <= FitnessCum[i] :
-                self.Population[i] = figlio1
-                if figlio1.Fitness < self.BestCandidateFitness:
-                    self.BestCandidateInd = i
-                    self.BestCandidateFitness = figlio1.Fitness   
+        # individua moribondo 1 e lo sostituisce con figlio 1
+        moribondo1 = -1
+        moribondo2 = -1
+        stop = False
+        while not stop :
+            first = random.random() * SumFitness
+            found = False
+            if first <= FitnessCum[0] :
+                if 0 not in EliteArray :
+                    self.Population[0] = figlio1
+                    if figlio1.Fitness < self.BestCandidateFitness:
+                        self.BestCandidateInd = 0
+                        self.BestCandidateFitness = figlio1.Fitness   
+                        moribondo1 = 0
+                        stop = True
                 found = True
-            i = i + 1
+            i = 1
+            while not found :
+                if first <= FitnessCum[i] :
+                    if i not in EliteArray :
+                        self.Population[i] = figlio1
+                        if figlio1.Fitness < self.BestCandidateFitness:
+                            self.BestCandidateInd = i
+                            self.BestCandidateFitness = figlio1.Fitness   
+                            moribondo1 = i
+                            stop = True
+                    found = True
+                i = i + 1
 
         # individua moribondo 2 e lo sostituisce con figlio 2
         stop = False
@@ -291,27 +302,26 @@ class GeneticAlg():
             second = random.random() *  SumFitness
             found = False
             if second <= FitnessCum[0] :
-                genitore2 = self.Population[0]
-                found = True
-            found = False
-            if second <= FitnessCum[0] :
-              self.Population[0] = figlio2
-              if figlio2.Fitness < self.BestCandidateFitness:
-                self.BestCandidateInd = 0
-                self.BestCandidateFitness = figlio2.Fitness   
+                if 0 not in EliteArray and moribondo1 != 0:
+                    self.Population[0] = figlio2
+                    if figlio2.Fitness < self.BestCandidateFitness:
+                        self.BestCandidateInd = 0
+                        self.BestCandidateFitness = figlio2.Fitness   
+                        moribondo2 = 0
+                        stop = True
                 found = True
             i = 1
             while not found :
                 if second <= FitnessCum[i] :
-                    self.Population[i] = figlio2
-                    if figlio2.Fitness < self.BestCandidateFitness:
-                        self.BestCandidateInd = i
-                        self.BestCandidateFitness = figlio2.Fitness   
+                    if i not in EliteArray and moribondo1 != i:
+                        self.Population[i] = figlio2
+                        if figlio2.Fitness < self.BestCandidateFitness:
+                            self.BestCandidateInd = i
+                            self.BestCandidateFitness = figlio2.Fitness   
+                            moribondo2 = i
+                            stop = True
                     found = True
                 i = i + 1
-
-            if first != second :
-                stop = True
 
         return
 
