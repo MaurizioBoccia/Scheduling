@@ -30,20 +30,17 @@ class Solution():
         self.Inst = Inst
         
         self.Candidate = Candidate
-
-        self.Makespan = 0
-
-        self.ListOfJobs = [[] for i in range(self.Inst.NumMachines)]
-
-
-        self.UpdateSol()
         
-        numrich = 0
-
+        self.UpdateSol(self.Candidate)
+        
+        self.Makespan = self.Candidate.Fitness
      
-    def UpdateSol(self):
+    def UpdateSol(self,Candidate):
 
         update = False
+        
+
+        self.ListOfJobs = [[] for i in range(self.Inst.NumMachines)]
         
         for i in self.Candidate.Genotype:
             self.ListOfJobs[i[1]].append(i[0])
