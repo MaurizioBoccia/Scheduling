@@ -127,34 +127,66 @@ class GeneticAlg():
             for j in range(p1,p2+1):
                 if offspring1.Genotype[i][0] == genitore2.Genotype[j][0]:
                     check = j
+                    while True:
+                        doublecheck = False
+                        for k in range(p1,p2+1):
+                            if genitore1.Genotype[check][0] == genitore2.Genotype[k][0]:
+                                check = k
+                                doublecheck = True
+                        if doublecheck == False:
+                            break                    
                     break
             if check > -1:
-                offspring1.Genotype[i] = copy.deepcopy(genitore1.Genotype[j])
+                offspring1.Genotype[i] = copy.deepcopy(genitore1.Genotype[check])
                 
             check=-1
             for j in range(p1,p2+1):
                 if offspring2.Genotype[i][0] == genitore1.Genotype[j][0]:
                     check = j
+                    while True:
+                        doublecheck = False
+                        for k in range(p1,p2+1):
+                            if genitore2.Genotype[check][0] == genitore1.Genotype[k][0]:
+                                check = k
+                                doublecheck = True
+                        if doublecheck == False:
+                            break                    
                     break
             if check > -1:
-                offspring2.Genotype[i] = copy.deepcopy(genitore2.Genotype[j])
+                offspring2.Genotype[i] = copy.deepcopy(genitore2.Genotype[check])
         
         for i in range(p2+1,self.Inst.NumJobs):
             check=-1
             for j in range(p1,p2+1):
                 if offspring1.Genotype[i][0] == genitore2.Genotype[j][0]:
                     check = j
+                    while True:
+                        doublecheck = False
+                        for k in range(p1,p2+1):
+                            if genitore1.Genotype[check][0] == genitore2.Genotype[k][0]:
+                                check = k
+                                doublecheck = True
+                        if doublecheck == False:
+                            break                    
                     break
             if check > -1:
-                offspring1.Genotype[i] = copy.deepcopy(genitore1.Genotype[j])
+                offspring1.Genotype[i] = copy.deepcopy(genitore1.Genotype[check])
                 
             check=-1
             for j in range(p1,p2+1):
                 if offspring2.Genotype[i][0] == genitore1.Genotype[j][0]:
                     check = j
+                    while True:
+                        doublecheck = False
+                        for k in range(p1,p2+1):
+                            if genitore2.Genotype[check][0] == genitore1.Genotype[k][0]:
+                                check = k
+                                doublecheck = True
+                        if doublecheck == False:
+                            break                    
                     break
             if check > -1:
-                offspring2.Genotype[i] = copy.deepcopy(genitore2.Genotype[j])
+                offspring2.Genotype[i] = copy.deepcopy(genitore2.Genotype[check])
         # print(p1,p2)
         # print(genitore1.Genotype)
         # print(genitore2.Genotype)

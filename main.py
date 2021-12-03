@@ -25,3 +25,4 @@ PopSize = 10
 NumOfIterations = 100
 
 GA = GeneticAlg(Inst, PopSize, NumOfIterations)
+print(GA.BestCandidateFitness)
