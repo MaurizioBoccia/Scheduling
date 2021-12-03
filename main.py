@@ -11,7 +11,7 @@ import random
 #======================================================
 
 #FileName = input('Inserisci il nome del file di input: ')
-FileName = "Ins_V5_J50_T10_R60_B6_W1_S120_N0.txt"
+FileName = "Ins_V2_J10_T10_R60_B6_W1_S0_N0.txt"
 #FileName = input()
 #FileName = sys.argv[1]
 
@@ -21,7 +21,7 @@ Inst = Instance(FileName)
 # Implementa un algoritmo genetico
 #======================================================
 
-PopSize = 50
+PopSize = 10
 NumOfIterations = 100
 
 GA = GeneticAlg(Inst, PopSize, NumOfIterations)

@@ -21,9 +21,12 @@ from Instance import Instance
 from Solution import Solution
 from Candidate import Candidate
 
+
 import numpy as np
 import math 
 import random
+import copy
+import numpy
 
 class GeneticAlg():
 
@@ -49,16 +52,137 @@ class GeneticAlg():
 
         # preleva la migliore soluzione, la riottimizza risolvendo un problema di bin packing per ogni macchina
         #  e la memorizza in solution
-        #self.BestSol = Solution(Inst)
-        #self.BestSol.update(self.Population[self.BestCandidateInd])
+        self.BestSol = Solution(Inst,self.Population[self.BestCandidateInd])
 
         # ALGORITMO GENETICO
         for iter in range(self.NumOfIterations) :
             # Seleziona una coppia di genitori con il metodo Montecarlo
-            genitore1, genitore2 = self.SelezioneMontecarlo()
+            Newpop = self.Elite(self.Population,3)
+            self.BestCandidateInd = 0
+            
+            while len(Newpop) <= self.PopSize:
+                genitore1, genitore2 = self.SelezioneMontecarlo()
+                
+                
+                offspring1, offspring2 = self.Crossover(genitore1, genitore2)
+    
+    
+                offspring1 = self.Mutation(offspring1,0.10,0.10)
+                
+                offspring2 = self.Mutation(offspring2,0.10,0.10)
+                
+                offspring1.Makespan, offspring1.OverLoadMac, offspring1.Recharges = offspring1.ComputeFitness()
+
+                offspring1.Fitness = max(offspring1.Makespan)
+                if offspring1.Fitness < self.BestCandidateFitness:
+                    self.BestCandidateFitness = offspring1.Fitness
+                    self.BestSol = offspring1
+                    self.BestCandidateInd = len(Newpop)
+                
+                Newpop.append(offspring1)
+                    
+                
+                offspring2.Makespan, offspring2.OverLoadMac, offspring2.Recharges = offspring2.ComputeFitness()
+
+                offspring2.Fitness = max(offspring2.Makespan)
+                if offspring2.Fitness < self.BestCandidateFitness:
+                    self.BestCandidateFitness = offspring2.Fitness
+                    self.BestSol = offspring2
+                    self.BestCandidateInd = len(Newpop)
+                
+                
+                Newpop.append(offspring2)
+            
+            self.Population = Newpop
+            
+            self.BestSol = Solution(Inst,self.Population[self.BestCandidateInd])
 
 
+    def Elite(self,Oldpop,nelite):
+        
+        Newpop = []
+        val = []
+        for i in Oldpop:
+                val.append(i.Fitness)
+        idbest = numpy.argsort(val)
+        
+        for i in range(nelite):
+            Newpop.append(Oldpop[idbest[i]])
+        return Newpop
 
+    def Crossover(self,genitore1,genitore2):
+
+        # calcola primo e secondo punto crossover
+        p1= random.randint(0,self.Inst.NumJobs-2)
+        p2= random.randint(p1,self.Inst.NumJobs-1)
+                
+        offspring1 = copy.deepcopy(genitore1)
+        offspring2 = copy.deepcopy(genitore2)
+        
+        for i in range(p1,p2+1):
+            offspring1.Genotype[i] = copy.deepcopy(genitore2.Genotype[i])
+            offspring2.Genotype[i] = copy.deepcopy(genitore1.Genotype[i])
+        for i in range(p1):
+            check=-1
+            for j in range(p1,p2+1):
+                if offspring1.Genotype[i][0] == genitore2.Genotype[j][0]:
+                    check = j
+                    break
+            if check > -1:
+                offspring1.Genotype[i] = copy.deepcopy(genitore1.Genotype[j])
+                
+            check=-1
+            for j in range(p1,p2+1):
+                if offspring2.Genotype[i][0] == genitore1.Genotype[j][0]:
+                    check = j
+                    break
+            if check > -1:
+                offspring2.Genotype[i] = copy.deepcopy(genitore2.Genotype[j])
+        
+        for i in range(p2+1,self.Inst.NumJobs):
+            check=-1
+            for j in range(p1,p2+1):
+                if offspring1.Genotype[i][0] == genitore2.Genotype[j][0]:
+                    check = j
+                    break
+            if check > -1:
+                offspring1.Genotype[i] = copy.deepcopy(genitore1.Genotype[j])
+                
+            check=-1
+            for j in range(p1,p2+1):
+                if offspring2.Genotype[i][0] == genitore1.Genotype[j][0]:
+                    check = j
+                    break
+            if check > -1:
+                offspring2.Genotype[i] = copy.deepcopy(genitore2.Genotype[j])
+        # print(p1,p2)
+        # print(genitore1.Genotype)
+        # print(genitore2.Genotype)
+        # print(offspring1.Genotype)
+        # print(offspring2.Genotype)
+        return offspring1, offspring2
+    
+    
+    def Mutation(self,offspring, threshold1, threshold2):
+        
+        # mutazione macchina
+        check = random.random()
+        if check <= threshold1:
+            p1= random.randint(0,self.Inst.NumJobs-1)
+            p2= random.randint(0,self.Inst.NumMachines-1)
+            offspring.Genotype[p1]=(offspring.Genotype[p1][0],p2)
+        
+        # mutazione posizione job
+        check = random.random()
+        if check <= threshold2:
+            p1= random.randint(0,self.Inst.NumJobs-1)
+            p2= random.randint(0,self.Inst.NumJobs-1)
+            check = offspring.Genotype[p1]
+            offspring.Genotype[p1]=offspring.Genotype[p2]
+            offspring.Genotype[p2]= check
+        
+             
+        return offspring
 
     def SelezioneMontecarlo(self):
 
