@@ -30,11 +30,15 @@ import numpy
 
 class GeneticAlg():
 
-    def __init__(self, Inst, PopSize, NumOfIterations):
+    def __init__(self, Inst, PopSize, NumOfGen, NumOfIterationsPerGen, ProbMutation1, ProbMutation2, NumElite):
 
         self.Inst = Inst 
         self.PopSize = PopSize 
-        self.NumOfIterations = NumOfIterations 
+        self.NumOfGen = NumOfGen
+        self.NumOfIterationsPerGen = NumOfIterationsPerGen
+        self.ProbMutation1 = ProbMutation1
+        self.ProbMutation2 = ProbMutation2
+        self.NumElite = NumElite
 
         # genera la popolazione iniziale
 
@@ -55,60 +59,46 @@ class GeneticAlg():
         self.BestSol = Solution(Inst,self.Population[self.BestCandidateInd])
 
         # ALGORITMO GENETICO
-        for iter in range(self.NumOfIterations) :
-            # Seleziona una coppia di genitori con il metodo Montecarlo
-            Newpop = self.Elite(self.Population,3)
-            self.BestCandidateInd = 0
-            
-            while len(Newpop) <= self.PopSize:
+        for gen in range(self.NumOfGen) :
+
+            for iter in range(self.NumOfIterationsPerGen) :
+
+                # Seleziona una coppia di genitori con il metodo Montecarlo
                 genitore1, genitore2 = self.SelezioneMontecarlo()
                 
+                figlio1, figlio2 = self.Crossover(genitore1, genitore2)
                 
-                offspring1, offspring2 = self.Crossover(genitore1, genitore2)
-    
-    
-                offspring1 = self.Mutation(offspring1,0.10,0.10)
+                if figlio1.Fitness < self.BestCandidateFitness:
+                    self.BestSol.UpdateSol(figlio1)
                 
-                offspring2 = self.Mutation(offspring2,0.10,0.10)
+                if figlio2.Fitness < self.BestCandidateFitness:
+                    self.BestSol.UpdateSol(figlio2)
                 
-                offspring1.Makespan, offspring1.OverLoadMac, offspring1.Recharges = offspring1.ComputeFitness()
-
-                offspring1.Fitness = max(offspring1.Makespan)
-                if offspring1.Fitness < self.BestCandidateFitness:
-                    self.BestCandidateFitness = offspring1.Fitness
-                    self.BestSol = offspring1
-                    self.BestCandidateInd = len(Newpop)
+                figlio1 = self.Mutation(figlio1, self.ProbMutation1, self.ProbMutation2)
                 
-                Newpop.append(offspring1)
+                figlio2 = self.Mutation(figlio2, self.ProbMutation1, self.ProbMutation2)
+                
+                if figlio1.Fitness < self.BestCandidateFitness:
+                    self.BestSol.UpdateSol(figlio1)
+                
+                if figlio2.Fitness < self.BestCandidateFitness:
+                    self.BestSol.UpdateSol(figlio2)
                     
-                
-                offspring2.Makespan, offspring2.OverLoadMac, offspring2.Recharges = offspring2.ComputeFitness()
-
-                offspring2.Fitness = max(offspring2.Makespan)
-                if offspring2.Fitness < self.BestCandidateFitness:
-                    self.BestCandidateFitness = offspring2.Fitness
-                    self.BestSol = offspring2
-                    self.BestCandidateInd = len(Newpop)
-                
-                
-                Newpop.append(offspring2)
-            
-            self.Population = Newpop
-            
-            self.BestSol = Solution(Inst,self.Population[self.BestCandidateInd])
+                self.UpdatePopulation(self, figlio1, figlio2, self.NumElite)
 
 
-    def Elite(self,Oldpop,nelite):
+    def Elite(self, NumElite):
         
-        Newpop = []
+        Elite = []
         val = []
-        for i in Oldpop:
+        for i in self.Population:
                 val.append(i.Fitness)
         idbest = numpy.argsort(val)
         
         for i in range(nelite):
-            Newpop.append(Oldpop[idbest[i]])
-        return Newpop
+            Elite.append(idbest[i])
+
+        return Elite
 
     def Crossover(self,genitore1,genitore2):
 
@@ -192,8 +182,9 @@ class GeneticAlg():
         # print(genitore2.Genotype)
         # print(offspring1.Genotype)
         # print(offspring2.Genotype)
+            offspring1.Fitness, ring1.Makespan, offspring1.OverLoadMac, offspring1.Recharges = offspring1.ComputeFitness()
+            offspring2.Fitness, offspring2.Makespan, offspring2.OverLoadMac, offspring2.Recharges = offspring2.ComputeFitness()
         return offspring1, offspring2
-    
     
     def Mutation(self,offspring, threshold1, threshold2):
         
@@ -260,6 +251,70 @@ class GeneticAlg():
                 stop = True
 
         return genitore1, genitore2
+
+    def UpdatePopulation(self, figlio1, figlio2):
+
+        # selezione due moribondi
+
+        # clacola la fitness inversa cumulata di ogni candidato
+        SumFitness = 0
+        for i in range(len(self.Population)) :
+            SumFitness = SumFitness + self.Population[i].Fitness
+
+        FitnessCum = [self.Population[0].Fitness]
+        for i in range(1, len(self.Population)) :
+            FitnessCum.append(FitnessCum[i-1] + self.Population[i].Fitness)
+
+        # individua moribondo 1 e lo sostituisce con figlio 1
+        first = random.random() * SumFitness
+
+        found = False
+        if first <= FitnessCum[0] :
+            self.Population[0] = figlio1
+            if figlio1.Fitness < self.BestCandidateFitness:
+                self.BestCandidateInd = 0
+                self.BestCandidateFitness = figlio1.Fitness   
+            found = True
+        i = 1
+        while not found :
+            if first <= FitnessCum[i] :
+                self.Population[i] = figlio1
+                if figlio1.Fitness < self.BestCandidateFitness:
+                    self.BestCandidateInd = i
+                    self.BestCandidateFitness = figlio1.Fitness   
+                found = True
+            i = i + 1
+
+        # individua moribondo 2 e lo sostituisce con figlio 2
+        stop = False
+        while not stop :
+            second = random.random() *  SumFitness
+            found = False
+            if second <= FitnessCum[0] :
+                genitore2 = self.Population[0]
+                found = True
+            found = False
+            if second <= FitnessCum[0] :
+              self.Population[0] = figlio2
+              if figlio2.Fitness < self.BestCandidateFitness:
+                self.BestCandidateInd = 0
+                self.BestCandidateFitness = figlio2.Fitness   
+                found = True
+            i = 1
+            while not found :
+                if second <= FitnessCum[i] :
+                    self.Population[i] = figlio2
+                    if figlio2.Fitness < self.BestCandidateFitness:
+                        self.BestCandidateInd = i
+                        self.BestCandidateFitness = figlio2.Fitness   
+                    found = True
+                i = i + 1
+
+            if first != second :
+                stop = True
+
+        return
+
 
 
     

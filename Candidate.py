@@ -76,7 +76,7 @@ class Candidate():
                 
             tmac[self.Genotype[i][1]] += self.Inst.Dur[self.Genotype[i][0]][self.Genotype[i][1]]
                     
-        return tmac, tmac.index(max(tmac)), rech
+        return max(tmac), tmac, tmac.index(max(tmac)), rech
 
 
            
