@@ -29,9 +29,7 @@ class Solution():
 
         self.Inst = Inst
         
-        self.Candidate = Candidate
-        
-        self.UpdateSol(self.Candidate)
+        update, self.Candidate = self.UpdateSol(Candidate)
         
         self.Makespan = self.Candidate.Fitness
      
@@ -40,30 +38,39 @@ class Solution():
         update = False
         
 
-        self.ListOfJobs = [[] for i in range(self.Inst.NumMachines)]
+        ListOfJobs = [[] for i in range(self.Inst.NumMachines)]
         
-        for i in self.Candidate.Genotype:
-            self.ListOfJobs[i[1]].append(i[0])
+        for i in Candidate.Genotype:
+            ListOfJobs[i[1]].append(i[0])
         # print(self.Candidate.Genotype)
         Step1Status = 0
         machlist =  []
         
-        for i in numpy.argsort(self.Candidate.Makespan):
+        for i in numpy.argsort(Candidate.Makespan):
             machlist.insert(0, i)
         for i in machlist:
-            stat, numchar = self.BPP(self.ListOfJobs[i],self.Candidate.Recharges[i])
+            stat, numchar, job2charges = self.BPP(ListOfJobs[i],Candidate.Recharges[i])
             
-            if numchar < self.Candidate.Recharges[i]:
+            if stat == 1 and numchar < Candidate.Recharges[i]:
                 update = True
-                self.Candidate.Makespan[i] -= self.Inst.ChargingTime*(self.Candidate.Recharges[i] - numchar)
-                self.Candidate.Recharges[i] = numchar
+                Candidate.Makespan[i] -= self.Inst.ChargingTime*(Candidate.Recharges[i] - numchar)
+                Candidate.Recharges[i] = numchar
                 
+                orderedj = []
+                for j in job2charges:
+                    for k in j:
+                        orderedj.append(k)
+                cont = 0
+                for j in range(len(Candidate.Genotype)):
+                    if Candidate.Genotype[j][1] == i:
+                        Candidate.Genotype[j] = (orderedj[cont], i)
+                        cont+=1
             else: 
                 break
         if update == True:
-            self.Candidate.Fitness = max(self.Candidate.Makespan)
+            Candidate.Fitness = max(Candidate.Makespan)
 
-        return update
+        return update, Candidate
     
     
     def BPP(self,jobs,ncharges):
@@ -122,28 +129,29 @@ class Solution():
                     
                 # definisce i bin e il relativo peso
     
-                # self.Bin = []
+                self.Bin = []
     
-                # for i in range(int(self.BPmod.objVal)):
+                for i in range(int(self.BPmod.objVal)):
     
-                #     listOfJobs = []
+                     listj = []
                 #     weight = 0
                 #     dur = 0
     
-                #     for j in self.job :
-    
-                #         if self.Cvar[i,j].x > 0.5 :
+                     for j in jobs :
+
+                        if self.Cvar[i,j].x > 0.5 :
     
                 #             weight = weight + self.Inst.Weight[j][m] 
                 #             dur = dur + self.Inst.Dur[j][m]
     
-                #             listOfJobs.append(j)
+                            listj.append(j)
+                     self.Bin.append(listj)
     
                 #     dur = dur + self.Inst.ChargingTime
     
                 #     self.Bin.append((dur, weight, listOfJobs, -1))
     
-            return Step1Status, self.LowerBound
+            return Step1Status, self.LowerBound, self.Bin
     
     
     

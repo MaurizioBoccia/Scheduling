@@ -20,6 +20,7 @@
 from Instance import Instance
 from Solution import Solution
 from Candidate import Candidate
+from SuperCandidate import SuperCandidate
 
 
 import numpy as np
@@ -46,7 +47,17 @@ class GeneticAlg():
 
         self.BestCandidateFitness = 100000000
         self.BestCandidateInd = -1
-        for i in range(self.PopSize) :
+        CandidateTemp = SuperCandidate(Inst,0)
+        if CandidateTemp.Fitness < self.BestCandidateFitness :
+                self.BestCandidateInd = 0
+                self.BestCandidateFitness = CandidateTemp.Fitness
+        self.Population.append(CandidateTemp)
+        CandidateTemp = SuperCandidate(Inst,1)
+        if CandidateTemp.Fitness < self.BestCandidateFitness :
+                self.BestCandidateInd = 1
+                self.BestCandidateFitness = CandidateTemp.Fitness
+        self.Population.append(CandidateTemp)
+        for i in range(2,self.PopSize) :
             CandidateTemp = Candidate(Inst, i)
             if CandidateTemp.Fitness < self.BestCandidateFitness :
                 self.BestCandidateInd = i
@@ -57,6 +68,8 @@ class GeneticAlg():
         # preleva la migliore soluzione, la riottimizza risolvendo un problema di bin packing per ogni macchina
         #  e la memorizza in solution
         self.BestSol = Solution(Inst,self.Population[self.BestCandidateInd])
+        if self.BestSol.Makespan < self.Population[self.BestCandidateInd].Fitness:
+            self.Population[self.BestCandidateInd] = self.BestSol.Candidate
 
         # ALGORITMO GENETICO
         for gen in range(self.NumOfGen) :
@@ -69,20 +82,20 @@ class GeneticAlg():
                 figlio1, figlio2 = self.Crossover(genitore1, genitore2)
                 
                 if figlio1.Fitness < self.BestCandidateFitness:
-                    self.BestSol.UpdateSol(figlio1)
+                    update, figlio1 = self.BestSol.UpdateSol(figlio1)
                 
                 if figlio2.Fitness < self.BestCandidateFitness:
-                    self.BestSol.UpdateSol(figlio2)
+                    update, figlio2 = self.BestSol.UpdateSol(figlio2)
                 
                 figlio1 = self.Mutation(figlio1, self.ProbMutation1, self.ProbMutation2)
                 
                 figlio2 = self.Mutation(figlio2, self.ProbMutation1, self.ProbMutation2)
                 
                 if figlio1.Fitness < self.BestCandidateFitness:
-                    self.BestSol.UpdateSol(figlio1)
+                    update, figlio1 = self.BestSol.UpdateSol(figlio1)
                 
                 if figlio2.Fitness < self.BestCandidateFitness:
-                    self.BestSol.UpdateSol(figlio2)
+                    update, figlio2 = self.BestSol.UpdateSol(figlio2)
                     
                 self.UpdatePopulation(figlio1, figlio2)
 
