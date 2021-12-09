@@ -21,9 +21,9 @@ Inst = Instance(FileName)
 # Implementa un algoritmo genetico
 #======================================================
 
-PopSize = 100
+PopSize = 200
 NumOfGen = 100
-NumOfIterationsPerGen = 30
+NumOfIterationsPerGen = 20
 ProbMutation1 = 0.2
 ProbMutation2 = 0.2
 NumElite = 10

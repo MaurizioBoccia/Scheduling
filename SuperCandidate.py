@@ -33,8 +33,6 @@ class SuperCandidate():
 
         self.Genotype = []
 
-        self.RandomlyGenerate()
-
         self.OverLoadMac = -1
         
         self.Recharges = []
@@ -81,6 +79,24 @@ class SuperCandidate():
             emac[temp1]= wei[i] + (1-temp3)*emac[temp1]            
                             
         return Genotype, max(tmac), tmac, tmac.index(max(tmac)), rech
+    
+    def ComputeFitness(self): 
+        
+        tmac = [0 for i in range(self.Inst.NumMachines)]
+        emac = [0 for i in range(self.Inst.NumMachines)]
+        rech = [1 for i in range(self.Inst.NumMachines)]
+        
+        for i in range(self.Inst.NumJobs):
+            if emac[self.Genotype[i][1]]+self.Inst.Weight[self.Genotype[i][0]][self.Genotype[i][1]] > self.Inst.MaxChargeLevel:
+                emac[self.Genotype[i][1]] = self.Inst.Weight[self.Genotype[i][0]][self.Genotype[i][1]]
+                tmac[self.Genotype[i][1]] += self.Inst.ChargingTime
+                rech[self.Genotype[i][1]]+= 1
+            else:
+                emac[self.Genotype[i][1]] += self.Inst.Weight[self.Genotype[i][0]][self.Genotype[i][1]]
+                
+            tmac[self.Genotype[i][1]] += self.Inst.Dur[self.Genotype[i][0]][self.Genotype[i][1]]
+                    
+        return max(tmac), tmac, tmac.index(max(tmac)), rech
 
 
            
