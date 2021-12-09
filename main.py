@@ -21,12 +21,12 @@ Inst = Instance(FileName)
 # Implementa un algoritmo genetico
 #======================================================
 
-PopSize = 10
+PopSize = 100
 NumOfGen = 100
-NumOfIterationsPerGen = 2
-ProbMutation1 = 0.1
-ProbMutation2 = 0.1
-NumElite = 2
+NumOfIterationsPerGen = 10
+ProbMutation1 = 0.2
+ProbMutation2 = 0.2
+NumElite = 5
 
-GA = GeneticAlg(Inst, Inst, PopSize, NumOfGen, NumOfIterationsPerGen, ProbMutation1, ProbMutation2, NumElite)
+GA = GeneticAlg(Inst, PopSize, NumOfGen, NumOfIterationsPerGen, ProbMutation1, ProbMutation2, NumElite)
 print(GA.BestCandidateFitness)

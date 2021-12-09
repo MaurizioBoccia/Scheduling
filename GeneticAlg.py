@@ -84,7 +84,7 @@ class GeneticAlg():
                 if figlio2.Fitness < self.BestCandidateFitness:
                     self.BestSol.UpdateSol(figlio2)
                     
-                self.UpdatePopulation(self, figlio1, figlio2, self.NumElite)
+                self.UpdatePopulation(figlio1, figlio2)
 
 
     def Elite(self, NumElite):
@@ -95,7 +95,7 @@ class GeneticAlg():
                 val.append(i.Fitness)
         idbest = numpy.argsort(val)
         
-        for i in range(nelite):
+        for i in range(NumElite):
             EliteArray.append(idbest[i])
 
         return EliteArray
@@ -182,7 +182,7 @@ class GeneticAlg():
         # print(genitore2.Genotype)
         # print(offspring1.Genotype)
         # print(offspring2.Genotype)
-            offspring1.Fitness, ring1.Makespan, offspring1.OverLoadMac, offspring1.Recharges = offspring1.ComputeFitness()
+            offspring1.Fitness, offspring1.Makespan, offspring1.OverLoadMac, offspring1.Recharges = offspring1.ComputeFitness()
             offspring2.Fitness, offspring2.Makespan, offspring2.OverLoadMac, offspring2.Recharges = offspring2.ComputeFitness()
         return offspring1, offspring2
     
@@ -280,8 +280,8 @@ class GeneticAlg():
                     if figlio1.Fitness < self.BestCandidateFitness:
                         self.BestCandidateInd = 0
                         self.BestCandidateFitness = figlio1.Fitness   
-                        moribondo1 = 0
-                        stop = True
+                    moribondo1 = 0
+                    stop = True
                 found = True
             i = 1
             while not found :
@@ -291,8 +291,8 @@ class GeneticAlg():
                         if figlio1.Fitness < self.BestCandidateFitness:
                             self.BestCandidateInd = i
                             self.BestCandidateFitness = figlio1.Fitness   
-                            moribondo1 = i
-                            stop = True
+                        moribondo1 = i
+                        stop = True
                     found = True
                 i = i + 1
 
@@ -307,8 +307,8 @@ class GeneticAlg():
                     if figlio2.Fitness < self.BestCandidateFitness:
                         self.BestCandidateInd = 0
                         self.BestCandidateFitness = figlio2.Fitness   
-                        moribondo2 = 0
-                        stop = True
+                    moribondo2 = 0
+                    stop = True
                 found = True
             i = 1
             while not found :
@@ -318,8 +318,8 @@ class GeneticAlg():
                         if figlio2.Fitness < self.BestCandidateFitness:
                             self.BestCandidateInd = i
                             self.BestCandidateFitness = figlio2.Fitness   
-                            moribondo2 = i
-                            stop = True
+                        moribondo2 = i
+                        stop = True
                     found = True
                 i = i + 1
 

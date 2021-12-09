@@ -39,9 +39,8 @@ class Candidate():
         self.Recharges = []
         
         self.Makespan = []
-        self.Makespan, self.OverLoadMac, self.Recharges = self.ComputeFitness()
+        self.Fitness, self.Makespan, self.OverLoadMac, self.Recharges = self.ComputeFitness()
 
-        self.Fitness = max(self.Makespan)
         
         
     def RandomlyGenerate(self):

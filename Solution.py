@@ -77,7 +77,9 @@ class Solution():
     
             # insiemi di indici
             self.job = len(jobs)
-            self.charge = range(ncharges)
+
+            self.charge = range(int(ncharges))
+
     
             # definizione delle variabili
             self.Gvar = self.BPmod.addVars(self.charge, obj=1.0, vtype=GRB.BINARY, name="G")
@@ -96,7 +98,7 @@ class Solution():
             
             # vincoli di ordinamento delle ricariche
             self.BPmod.addConstrs(
-                (self.Gvar[i] - self.Gvar[i-1] <= 0  for i in range(1, ncharges)), "Sorting")
+                (self.Gvar[i] - self.Gvar[i-1] <= 0  for i in range(1, int(ncharges))), "Sorting")
     
             #self.BPmod.write("BinPacking.lp")
     
