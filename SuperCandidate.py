@@ -19,6 +19,7 @@ from Instance import Instance
 import numpy
 import numpy as np
 import math 
+import copy
 import random
 
 class SuperCandidate():
@@ -57,6 +58,18 @@ class SuperCandidate():
             idbest = numpy.argsort(dur)
         elif seme == 1:
             idbest = numpy.argsort(wei)
+        elif seme == 2:
+            idbest = numpy.argsort(dur)
+            newbest = []
+            for i in idbest:
+                newbest.insert(0,i)
+            idbest = newbest
+        else:
+            idbest = numpy.argsort(wei)
+            newbest = []
+            for i in idbest:
+                newbest.insert(0,i)
+            idbest = newbest
             
         for i in idbest:
             temp1 = -1
