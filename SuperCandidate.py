@@ -55,7 +55,7 @@ class SuperCandidate():
             
         if seme == 0:
             idbest = numpy.argsort(dur)
-        else:
+        elif seme == 1:
             idbest = numpy.argsort(wei)
             
         for i in idbest:

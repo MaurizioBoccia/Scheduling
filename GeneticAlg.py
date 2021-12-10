@@ -47,16 +47,14 @@ class GeneticAlg():
 
         self.BestCandidateFitness = 100000000
         self.BestCandidateInd = -1
-        CandidateTemp = SuperCandidate(Inst,0)
-        if CandidateTemp.Fitness < self.BestCandidateFitness :
-                self.BestCandidateInd = 0
-                self.BestCandidateFitness = CandidateTemp.Fitness
-        self.Population.append(CandidateTemp)
-        CandidateTemp = SuperCandidate(Inst,1)
-        if CandidateTemp.Fitness < self.BestCandidateFitness :
-                self.BestCandidateInd = 1
-                self.BestCandidateFitness = CandidateTemp.Fitness
-        self.Population.append(CandidateTemp)
+        # Inserimento super candidate
+        for i in range(2):
+            CandidateTemp = SuperCandidate(Inst,i)
+            if CandidateTemp.Fitness < self.BestCandidateFitness :
+                    self.BestCandidateInd = i
+                    self.BestCandidateFitness = CandidateTemp.Fitness
+            self.Population.append(CandidateTemp)
+
         for i in range(2,self.PopSize) :
             CandidateTemp = Candidate(Inst, i)
             if CandidateTemp.Fitness < self.BestCandidateFitness :
