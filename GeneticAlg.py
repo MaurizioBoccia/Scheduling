@@ -69,9 +69,12 @@ class GeneticAlg():
         self.BestSol = Solution(Inst,self.Population[self.BestCandidateInd])
         if self.BestSol.Makespan < self.Population[self.BestCandidateInd].Fitness:
             self.Population[self.BestCandidateInd] = self.BestSol.Candidate
-
+            
+        bestfit = []
         # ALGORITMO GENETICO
         for gen in range(self.NumOfGen) :
+            
+            bestfit.append(self.BestCandidateFitness)
 
             for iter in range(self.NumOfIterationsPerGen) :
 
@@ -97,7 +100,14 @@ class GeneticAlg():
                     update, figlio2 = self.BestSol.UpdateSol(figlio2)
                     
                 self.UpdatePopulation(figlio1, figlio2)
-
+                
+                popfit = []
+                
+                for i in self.Population:
+                    popfit.append(i.Fitness)
+                print(popfit)
+        
+        print(bestfit)
 
     def Elite(self, NumElite):
         
