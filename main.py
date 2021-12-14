@@ -24,10 +24,10 @@ Inst = Instance(FileName)
 
 PopSize = 200
 NumOfGen = 20
-NumOfIterationsPerGen = 4
+NumOfIterationsPerGen = 6
 ProbMutation1 = 0.1
 ProbMutation2 = 0.1
-NumElite = 2
+NumElite = 6
 NumSuperCandidate = 4
 
 GA = GeneticAlg(Inst, PopSize, NumOfGen, NumOfIterationsPerGen, ProbMutation1, ProbMutation2, NumElite, NumSuperCandidate)

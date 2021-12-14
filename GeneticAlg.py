@@ -100,6 +100,8 @@ class GeneticAlg():
             
             
             bestfit.append(self.BestCandidateFitness)
+            
+            poolfigli = []
 
             for iter in range(self.NumOfIterationsPerGen) :
 
@@ -124,16 +126,20 @@ class GeneticAlg():
                 if figlio2.Fitness < self.BestCandidateFitness:
                     update, figlio2 = self.BestSol.UpdateSol(figlio2)
                     
-                self.UpdatePopulation(figlio1, figlio2)
+                poolfigli.append((figlio1, figlio2))
+        
+        
+        for i in poolfigli:
+            self.UpdatePopulation(i[0], i[1])
                 
-                popfit = []
+        popfit = []
                 
-                for i in self.Population:
-                    popfit.append(i.Fitness)
+        for i in self.Population:
+            popfit.append(i.Fitness)
                 # print(popfit)
                 # print(sum(popfit)/len(popfit))
                 
-                avgfit.append(sum(popfit)/len(popfit))
+        avgfit.append(sum(popfit)/len(popfit))
         
         # print(bestfit)
         # print(avgfit)
