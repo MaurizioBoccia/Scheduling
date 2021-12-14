@@ -112,7 +112,7 @@ class Solution():
             self.BPmod.optimize()
     
             self.LowerBound = 0
-            
+            self.Bin = []
             Step1Status = 0
             
             if self.BPmod.status == GRB.OPTIMAL or self.BPmod.status == GRB.SUBOPTIMAL or self.BPmod.status == GRB.TIME_LIMIT:
@@ -129,7 +129,7 @@ class Solution():
                     
                 # definisce i bin e il relativo peso
     
-                self.Bin = []
+                
     
                 for i in range(int(self.BPmod.objVal)):
     

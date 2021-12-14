@@ -23,11 +23,12 @@ Inst = Instance(FileName)
 #======================================================
 
 PopSize = 100
-NumOfGen = 3
-NumOfIterationsPerGen = 2
-ProbMutation1 = 0.2
-ProbMutation2 = 0.2
-NumElite = 10
+NumOfGen = 20
+NumOfIterationsPerGen = 4
+ProbMutation1 = 0.1
+ProbMutation2 = 0.1
+NumElite = 2
+NumSuperCandidate = 4
 
-GA = GeneticAlg(Inst, PopSize, NumOfGen, NumOfIterationsPerGen, ProbMutation1, ProbMutation2, NumElite)
+GA = GeneticAlg(Inst, PopSize, NumOfGen, NumOfIterationsPerGen, ProbMutation1, ProbMutation2, NumElite, NumSuperCandidate)
 print(GA.BestCandidateFitness)

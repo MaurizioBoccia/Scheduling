@@ -31,7 +31,7 @@ import numpy
 
 class GeneticAlg():
 
-    def __init__(self, Inst, PopSize, NumOfGen, NumOfIterationsPerGen, ProbMutation1, ProbMutation2, NumElite):
+    def __init__(self, Inst, PopSize, NumOfGen, NumOfIterationsPerGen, ProbMutation1, ProbMutation2, NumElite, NumSuperCandidate):
 
         self.Inst = Inst 
         self.PopSize = PopSize 
@@ -47,16 +47,39 @@ class GeneticAlg():
 
         self.BestCandidateFitness = 100000000
         self.BestCandidateInd = -1
-        # Inserimento super candidate
-        nsupcand = 4
+        # Inserimento super candidati
+        nsupcand = NumSuperCandidate
+        noffsup= 5
         for i in range(nsupcand):
             CandidateTemp = SuperCandidate(Inst,i)
             if CandidateTemp.Fitness < self.BestCandidateFitness :
                     self.BestCandidateInd = i
                     self.BestCandidateFitness = CandidateTemp.Fitness
             self.Population.append(CandidateTemp)
+            # inserimento supercandidati modificati
+            for j in range(noffsup):
+                oldfit = CandidateTemp.Fitness
+                NewCandidateTemp = copy.deepcopy(CandidateTemp)
+                NewCandidateTemp = self.Mutation(NewCandidateTemp, 1, 1)
+                NewCandidateTemp.Fitness = NewCandidateTemp.ComputeFitness()[0]
+                if NewCandidateTemp.Fitness >= oldfit:
+                    if NewCandidateTemp.Fitness < self.BestCandidateFitness :
+                        self.BestCandidateInd = i
+                        self.BestCandidateFitness = NewCandidateTemp.Fitness
+                    self.Population.append(NewCandidateTemp)
+                else:
+                    while NewCandidateTemp.Fitness < oldfit:
+                        oldfit = NewCandidateTemp.Fitness
+                        oldcand = copy.deepcopy(NewCandidateTemp)
+                        NewCandidateTemp = self.Mutation(NewCandidateTemp, 1, 1)
+                        NewCandidateTemp.Fitness = NewCandidateTemp.ComputeFitness()[0]
+                    if oldcand.Fitness < self.BestCandidateFitness :
+                        self.BestCandidateInd = i
+                        self.BestCandidateFitness = oldcand.Fitness
+                    self.Population.append(oldcand)
+                
 
-        for i in range(nsupcand,self.PopSize) :
+        for i in range(nsupcand*(noffsup+1),self.PopSize) :
             CandidateTemp = Candidate(Inst, i)
             if CandidateTemp.Fitness < self.BestCandidateFitness :
                 self.BestCandidateInd = i
@@ -71,8 +94,10 @@ class GeneticAlg():
             self.Population[self.BestCandidateInd] = self.BestSol.Candidate
             
         bestfit = []
+        avgfit = []
         # ALGORITMO GENETICO
         for gen in range(self.NumOfGen) :
+            
             
             bestfit.append(self.BestCandidateFitness)
 
@@ -105,10 +130,13 @@ class GeneticAlg():
                 
                 for i in self.Population:
                     popfit.append(i.Fitness)
-                print(popfit)
+                # print(popfit)
+                # print(sum(popfit)/len(popfit))
+                
+                avgfit.append(sum(popfit)/len(popfit))
         
-        print(bestfit)
-
+        # print(bestfit)
+        # print(avgfit)
     def Elite(self, NumElite):
         
         EliteArray = []
