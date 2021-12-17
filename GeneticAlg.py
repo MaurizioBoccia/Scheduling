@@ -348,7 +348,7 @@ class GeneticAlg():
         for i in range(self.nsupcand):
             CandidateTemp = SuperCandidate(self.Inst,i)
             if CandidateTemp.Fitness < self.BestCandidateFitness :
-                    self.BestCandidateInd = i
+                    self.BestCandidateInd = i*(noffsup+1)
                     self.BestCandidateFitness = CandidateTemp.Fitness
             self.Population.append(CandidateTemp)
             # inserimento supercandidati modificati
@@ -359,7 +359,7 @@ class GeneticAlg():
                 NewCandidateTemp.Fitness = NewCandidateTemp.ComputeFitness()[0]
                 if NewCandidateTemp.Fitness >= oldfit:
                     if NewCandidateTemp.Fitness < self.BestCandidateFitness :
-                        self.BestCandidateInd = i
+                        self.BestCandidateInd = i*(noffsup+1) + j
                         self.BestCandidateFitness = NewCandidateTemp.Fitness
                     self.Population.append(NewCandidateTemp)
                 else:
@@ -369,7 +369,7 @@ class GeneticAlg():
                         NewCandidateTemp = self.Mutation(NewCandidateTemp, 1, 1)
                         NewCandidateTemp.Fitness = NewCandidateTemp.ComputeFitness()[0]
                     if oldcand.Fitness < self.BestCandidateFitness :
-                        self.BestCandidateInd = i
+                        self.BestCandidateInd = i*(noffsup+1) + j
                         self.BestCandidateFitness = oldcand.Fitness
                     self.Population.append(oldcand)
                 
@@ -385,8 +385,9 @@ class GeneticAlg():
         # preleva la migliore soluzione, la riottimizza risolvendo un problema di bin packing per ogni macchina
         #  e la memorizza in solution
         self.BestSol = Solution(self.Inst,self.Population[self.BestCandidateInd])
-        if self.BestSol.Makespan < self.Population[self.BestCandidateInd].Fitness:
+        if self.BestSol.Makespan < self.BestCandidateFitness:
             self.Population[self.BestCandidateInd] = self.BestSol.Candidate
+            self.BestCandidateFitness = self.BestSol.Makespan
 
         return
 
