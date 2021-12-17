@@ -14,6 +14,8 @@
 #
 #   metodi:
 #       1) SelezioneMontecarlo(self) -> restituisce una coppia di genitori della popolazione corrente
+#       2) GenPopulation(self) -> genera la soluzione iniziale
+#       3) LocalSearch(self, 
 #
 #=====================================================================================================
 
@@ -40,64 +42,18 @@ class GeneticAlg():
         self.ProbMutation1 = ProbMutation1
         self.ProbMutation2 = ProbMutation2
         self.NumElite = NumElite
-
-        # genera la popolazione iniziale
-
-        self.Population = []
-
         self.BestCandidateFitness = 100000000
         self.BestCandidateInd = -1
-        # Inserimento super candidati
-        nsupcand = NumSuperCandidate
-        noffsup= 5
-        for i in range(nsupcand):
-            CandidateTemp = SuperCandidate(Inst,i)
-            if CandidateTemp.Fitness < self.BestCandidateFitness :
-                    self.BestCandidateInd = i
-                    self.BestCandidateFitness = CandidateTemp.Fitness
-            self.Population.append(CandidateTemp)
-            # inserimento supercandidati modificati
-            for j in range(noffsup):
-                oldfit = CandidateTemp.Fitness
-                NewCandidateTemp = copy.deepcopy(CandidateTemp)
-                NewCandidateTemp = self.Mutation(NewCandidateTemp, 1, 1)
-                NewCandidateTemp.Fitness = NewCandidateTemp.ComputeFitness()[0]
-                if NewCandidateTemp.Fitness >= oldfit:
-                    if NewCandidateTemp.Fitness < self.BestCandidateFitness :
-                        self.BestCandidateInd = i
-                        self.BestCandidateFitness = NewCandidateTemp.Fitness
-                    self.Population.append(NewCandidateTemp)
-                else:
-                    while NewCandidateTemp.Fitness < oldfit:
-                        oldfit = NewCandidateTemp.Fitness
-                        oldcand = copy.deepcopy(NewCandidateTemp)
-                        NewCandidateTemp = self.Mutation(NewCandidateTemp, 1, 1)
-                        NewCandidateTemp.Fitness = NewCandidateTemp.ComputeFitness()[0]
-                    if oldcand.Fitness < self.BestCandidateFitness :
-                        self.BestCandidateInd = i
-                        self.BestCandidateFitness = oldcand.Fitness
-                    self.Population.append(oldcand)
-                
+        self.nsupcand = NumSuperCandidate
 
-        for i in range(nsupcand*(noffsup+1),self.PopSize) :
-            CandidateTemp = Candidate(Inst, i)
-            if CandidateTemp.Fitness < self.BestCandidateFitness :
-                self.BestCandidateInd = i
-                self.BestCandidateFitness = CandidateTemp.Fitness
+        # genera la popolazione iniziale
+        self.GenInitialPopulation()
 
-            self.Population.append(CandidateTemp)
-
-        # preleva la migliore soluzione, la riottimizza risolvendo un problema di bin packing per ogni macchina
-        #  e la memorizza in solution
-        self.BestSol = Solution(Inst,self.Population[self.BestCandidateInd])
-        if self.BestSol.Makespan < self.Population[self.BestCandidateInd].Fitness:
-            self.Population[self.BestCandidateInd] = self.BestSol.Candidate
-            
         bestfit = []
         avgfit = []
+
         # ALGORITMO GENETICO
         for gen in range(self.NumOfGen) :
-            
             
             bestfit.append(self.BestCandidateFitness)
             
@@ -143,6 +99,8 @@ class GeneticAlg():
         
         # print(bestfit)
         # print(avgfit)
+
+
     def Elite(self, NumElite):
         
         EliteArray = []
@@ -378,6 +336,57 @@ class GeneticAlg():
                         stop = True
                     found = True
                 i = i + 1
+
+        return
+
+    def GenInitialPopulation(self):
+
+        self.Population = []
+
+        # Inserimento super candidati
+        noffsup= 5
+        for i in range(self.nsupcand):
+            CandidateTemp = SuperCandidate(self.Inst,i)
+            if CandidateTemp.Fitness < self.BestCandidateFitness :
+                    self.BestCandidateInd = i
+                    self.BestCandidateFitness = CandidateTemp.Fitness
+            self.Population.append(CandidateTemp)
+            # inserimento supercandidati modificati
+            for j in range(noffsup):
+                oldfit = CandidateTemp.Fitness
+                NewCandidateTemp = copy.deepcopy(CandidateTemp)
+                NewCandidateTemp = self.Mutation(NewCandidateTemp, 1, 1)
+                NewCandidateTemp.Fitness = NewCandidateTemp.ComputeFitness()[0]
+                if NewCandidateTemp.Fitness >= oldfit:
+                    if NewCandidateTemp.Fitness < self.BestCandidateFitness :
+                        self.BestCandidateInd = i
+                        self.BestCandidateFitness = NewCandidateTemp.Fitness
+                    self.Population.append(NewCandidateTemp)
+                else:
+                    while NewCandidateTemp.Fitness < oldfit:
+                        oldfit = NewCandidateTemp.Fitness
+                        oldcand = copy.deepcopy(NewCandidateTemp)
+                        NewCandidateTemp = self.Mutation(NewCandidateTemp, 1, 1)
+                        NewCandidateTemp.Fitness = NewCandidateTemp.ComputeFitness()[0]
+                    if oldcand.Fitness < self.BestCandidateFitness :
+                        self.BestCandidateInd = i
+                        self.BestCandidateFitness = oldcand.Fitness
+                    self.Population.append(oldcand)
+                
+
+        for i in range(self.nsupcand*(noffsup+1),self.PopSize) :
+            CandidateTemp = Candidate(self.Inst, i)
+            if CandidateTemp.Fitness < self.BestCandidateFitness :
+                self.BestCandidateInd = i
+                self.BestCandidateFitness = CandidateTemp.Fitness
+
+            self.Population.append(CandidateTemp)
+
+        # preleva la migliore soluzione, la riottimizza risolvendo un problema di bin packing per ogni macchina
+        #  e la memorizza in solution
+        self.BestSol = Solution(self.Inst,self.Population[self.BestCandidateInd])
+        if self.BestSol.Makespan < self.Population[self.BestCandidateInd].Fitness:
+            self.Population[self.BestCandidateInd] = self.BestSol.Candidate
 
         return
 
