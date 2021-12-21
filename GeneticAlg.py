@@ -33,7 +33,7 @@ import numpy
 
 class GeneticAlg():
 
-    def __init__(self, Inst, PopSize, NumOfGen, NumOfIterationsPerGen, ProbMutation1, ProbMutation2, NumElite, NumSuperCandidate):
+    def __init__(self, Inst, PopSize, NumOfGen, NumOfIterationsPerGen, ProbMutation1, ProbMutation2, NumElite, NumSuperCandidate, NumSuperFigli):
 
         self.Inst = Inst 
         self.PopSize = PopSize 
@@ -45,6 +45,7 @@ class GeneticAlg():
         self.BestCandidateFitness = 100000000
         self.BestCandidateInd = -1
         self.nsupcand = NumSuperCandidate
+        self.NumSuperFigli = NumSuperFigli
 
         # genera la popolazione iniziale
         self.GenInitialPopulation()
@@ -97,10 +98,10 @@ class GeneticAlg():
                     
             avgfit.append(sum(popfit)/len(popfit))
         
-        # print(bestfit)
-        print(avgfit)
+            print(bestfit)
+            print(avgfit)
 
-
+        print(popfit)
     def Elite(self, NumElite):
         
         EliteArray = []
@@ -344,7 +345,7 @@ class GeneticAlg():
         self.Population = []
 
         # Inserimento super candidati
-        noffsup= 5
+        noffsup= self.NumSuperFigli
         for i in range(self.nsupcand):
             CandidateTemp = SuperCandidate(self.Inst,i)
             if CandidateTemp.Fitness < self.BestCandidateFitness :
