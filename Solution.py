@@ -38,10 +38,8 @@ class Solution():
         update = False
         
 
-        ListOfJobs = [[] for i in range(self.Inst.NumMachines)]
-        
-        for i in Candidate.Genotype:
-            ListOfJobs[i[1]].append(i[0])
+        ListOfJobs = self.ComputeListofJobs(Candidate)
+            
         # print(self.Candidate.Genotype)
         Step1Status = 0
         machlist =  []
@@ -72,6 +70,47 @@ class Solution():
 
         return update, Candidate
     
+    
+    
+    def ComputeListofJobs(self,Candidate):
+        
+        
+        ListOfJobs = [[] for i in range(self.Inst.NumMachines)]
+        
+        Codifica = 0
+        if Codifica == 0:
+            for i in Candidate.Genotype:
+                ListOfJobs[i[1]].append(i[0])
+        elif Codifica == 1:
+        
+            tmac = [0 for i in range(self.Inst.NumMachines)]
+            emac = [0 for i in range(self.Inst.NumMachines)]
+            rech = [1 for i in range(self.Inst.NumMachines)]
+            for i in range(self.Inst.NumJobs):
+                lmac = -1
+                cmac = 999999999
+                for j in range(self.Inst.NumMachines):
+                    rmac = tmac[j]
+                    if emac[j]+self.Inst.Weight[Candidate.Genotype[i][0]][j] > self.Inst.MaxChargeLevel:
+                        rmac += self.Inst.ChargingTime
+                    if rmac < cmac:
+                        cmac = rmac
+                        lmac = j
+                if emac[lmac] +self.Inst.Weight[Candidate.Genotype[i][0]][lmac] > self.Inst.MaxChargeLevel:
+                    emac[lmac] = self.Inst.Weight[Candidate.Genotype[i][0]][lmac]
+                    tmac[lmac] += self.Inst.ChargingTime
+                    rech[lmac]+= 1
+                else:
+                    emac[lmac] += self.Inst.Weight[Candidate.Genotype[i][0]][lmac]
+                    
+                tmac[lmac] += self.Inst.Dur[Candidate.Genotype[i][0]][j]
+                ListOfJobs[lmac].append(i)
+                
+                
+                
+
+        
+        return ListOfJobs
     
     def BPP(self,jobs,ncharges):
         #-----------------------------------------------------#
