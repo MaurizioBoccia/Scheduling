@@ -33,7 +33,7 @@ import numpy
 
 class GeneticAlg():
 
-    def __init__(self, Inst, PopSize, NumOfGen, NumOfIterationsPerGen, ProbMutation1, ProbMutation2, NumElite, NumSuperCandidate, NumSuperFigli):
+    def __init__(self, Inst, PopSize, NumOfGen, NumOfIterationsPerGen, ProbMutation1, ProbMutation2, NumElite, NumSuperCandidate, NumSuperFigli, Codifica):
 
         self.Inst = Inst 
         self.PopSize = PopSize 
@@ -46,7 +46,7 @@ class GeneticAlg():
         self.BestCandidateInd = -1
         self.nsupcand = NumSuperCandidate
         self.NumSuperFigli = NumSuperFigli
-
+        self.Codifica = Codifica
         # genera la popolazione iniziale
         self.GenInitialPopulation()
 
@@ -347,7 +347,7 @@ class GeneticAlg():
         # Inserimento super candidati
         noffsup= self.NumSuperFigli
         for i in range(self.nsupcand):
-            CandidateTemp = SuperCandidate(self.Inst,i)
+            CandidateTemp = SuperCandidate(self.Inst,i, self.Codifica)
             if CandidateTemp.Fitness < self.BestCandidateFitness :
                     self.BestCandidateInd = i*(noffsup+1)
                     self.BestCandidateFitness = CandidateTemp.Fitness
@@ -376,7 +376,7 @@ class GeneticAlg():
                 
 
         for i in range(self.nsupcand*(noffsup+1),self.PopSize) :
-            CandidateTemp = Candidate(self.Inst, i)
+            CandidateTemp = Candidate(self.Inst, i, self.Codifica)
             if CandidateTemp.Fitness < self.BestCandidateFitness :
                 self.BestCandidateInd = i
                 self.BestCandidateFitness = CandidateTemp.Fitness
@@ -385,7 +385,7 @@ class GeneticAlg():
 
         # preleva la migliore soluzione, la riottimizza risolvendo un problema di bin packing per ogni macchina
         #  e la memorizza in solution
-        self.BestSol = Solution(self.Inst,self.Population[self.BestCandidateInd])
+        self.BestSol = Solution(self.Inst,self.Population[self.BestCandidateInd],self.Codifica)
         if self.BestSol.Makespan < self.BestCandidateFitness:
             self.Population[self.BestCandidateInd] = self.BestSol.Candidate
             self.BestCandidateFitness = self.BestSol.Makespan

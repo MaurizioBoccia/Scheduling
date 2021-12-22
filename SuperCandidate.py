@@ -24,11 +24,13 @@ import random
 
 class SuperCandidate():
 
-    def __init__(self, Inst, seme):
+    def __init__(self, Inst, seme, Codifica):
 
         self.Inst = Inst 
 
         self.seme = seme
+        
+        self.Codifica = Codifica
 
         self.Fitness = 0
 
@@ -96,7 +98,7 @@ class SuperCandidate():
         return Genotype, max(tmac), tmac, tmac.index(max(tmac)), rech
     
     def ComputeFitness(self): 
-        Codifica = 0
+        Codifica = self.Codifica
         tmac = [0 for i in range(self.Inst.NumMachines)]
         emac = [0 for i in range(self.Inst.NumMachines)]
         rech = [1 for i in range(self.Inst.NumMachines)]

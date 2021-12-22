@@ -22,11 +22,13 @@ import random
 
 class Candidate():
 
-    def __init__(self, Inst, seme):
+    def __init__(self, Inst, seme, Codifica):
 
         self.Inst = Inst 
 
         self.seme = seme
+        
+        self.Codifica = Codifica
 
         self.Fitness = 0
 
@@ -60,7 +62,7 @@ class Candidate():
 
 
     def ComputeFitness(self): 
-        Codifica = 0
+        Codifica = self.Codifica
         tmac = [0 for i in range(self.Inst.NumMachines)]
         emac = [0 for i in range(self.Inst.NumMachines)]
         rech = [1 for i in range(self.Inst.NumMachines)]

@@ -25,9 +25,11 @@ import numpy
 
 class Solution():
 
-    def __init__(self,  Inst, Candidate):
+    def __init__(self,  Inst, Candidate, Codifica):
 
         self.Inst = Inst
+        
+        self.Codifica = Codifica
         
         update, self.Candidate = self.UpdateSol(Candidate)
         
@@ -77,7 +79,7 @@ class Solution():
         
         ListOfJobs = [[] for i in range(self.Inst.NumMachines)]
         
-        Codifica = 0
+        Codifica = self.Codifica
         if Codifica == 0:
             for i in Candidate.Genotype:
                 ListOfJobs[i[1]].append(i[0])
