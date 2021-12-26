@@ -94,7 +94,7 @@ class Candidate():
                 else:
                     emac[lmac] += self.Inst.Weight[self.Genotype[i][0]][lmac]
                     
-                tmac[lmac] += self.Inst.Dur[self.Genotype[i][0]][j]
+                tmac[lmac] += self.Inst.Dur[self.Genotype[i][0]][lmac]
             
             
             

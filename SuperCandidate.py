@@ -42,8 +42,8 @@ class SuperCandidate():
         
         self.Makespan = []
         self.Genotype, self.Fitness, self.Makespan, self.OverLoadMac, self.Recharges = self.ComputeCandidate(seme)
-        Codifica = 1
-        if Codifica == 1:
+        self.Codifica = 1
+        if self.Codifica == 1:
             self.Fitness, self.Makespan, self.OverLoadMac, self.Recharges = self.ComputeFitness()
         
     def ComputeCandidate(self,seme): 
@@ -130,7 +130,7 @@ class SuperCandidate():
                 else:
                     emac[lmac] += self.Inst.Weight[self.Genotype[i][0]][lmac]
                     
-                tmac[lmac] += self.Inst.Dur[self.Genotype[i][0]][j]
+                tmac[lmac] += self.Inst.Dur[self.Genotype[i][0]][lmac]
             
             
             
