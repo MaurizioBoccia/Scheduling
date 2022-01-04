@@ -34,6 +34,6 @@ NumSuperCandidate = 3
 # Numero figli per supercandidate
 NumSuperFigli = 5
 # Codifica 0 se nostra 1 se first release date di Costa
-Codifica = 1
+Codifica = 0
 GA = GeneticAlg(Inst, PopSize, NumOfGen, NumOfIterationsPerGen, ProbMutation1, ProbMutation2, NumElite, NumSuperCandidate, NumSuperFigli, Codifica)
 print(GA.BestCandidateFitness)
