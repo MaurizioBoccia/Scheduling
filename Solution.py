@@ -51,7 +51,7 @@ class Solution():
         for i in machlist:
             stat, numchar, job2charges = self.BPP(ListOfJobs[i],Candidate.Recharges[i])
             
-            if stat == 1 and numchar < Candidate.Recharges[i]:
+            if stat == 1 and numchar < Candidate.Recharges[i] and self.Codifica == 0:
                 update = True
                 Candidate.Makespan[i] -= self.Inst.ChargingTime*(Candidate.Recharges[i] - numchar)
                 Candidate.Recharges[i] = numchar
@@ -106,7 +106,7 @@ class Solution():
                     emac[lmac] += self.Inst.Weight[Candidate.Genotype[i][0]][lmac]
                     
                 tmac[lmac] += self.Inst.Dur[Candidate.Genotype[i][0]][j]
-                ListOfJobs[lmac].append(i)
+                ListOfJobs[lmac].append(Candidate.Genotype[i][0])
                 
                 
                 
