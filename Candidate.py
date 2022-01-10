@@ -60,7 +60,26 @@ class Candidate():
 
         return
 
+    def CopyCandidate(self, candidateor):
 
+        self.Codifica = candidateor.Codifica
+        self.Fitness = candidateor.Fitness
+        for i in range(len(candidateor.Genotype)):
+            self.Genotype[i] = candidateor.Genotype[i]
+        self.Inst = candidateor.Inst
+        for i in range(len(candidateor.Makespan)):
+            self.Makespan[i] = candidateor.Makespan[i]
+        self.OverLoadMac = candidateor.OverLoadMac
+        for i in range(len(candidateor.Recharges)):
+            self.Recharges[i] = candidateor.Recharges[i]
+        self.seme = candidateor.seme 
+        
+        return
+        
+    
+        
+        
+        
     def ComputeFitness(self): 
         Codifica = self.Codifica
         tmac = [0 for i in range(self.Inst.NumMachines)]

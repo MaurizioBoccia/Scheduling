@@ -67,21 +67,24 @@ class GeneticAlg():
                 
                 figlio1, figlio2 = self.Crossover(genitore1, genitore2)
                 
-                if figlio1.Fitness < self.BestCandidateFitness:
-                    update, figlio1 = self.BestSol.UpdateSol(figlio1)
-                
-                if figlio2.Fitness < self.BestCandidateFitness:
-                    update, figlio2 = self.BestSol.UpdateSol(figlio2)
-                
                 figlio1 = self.Mutation(figlio1, self.ProbMutation1, self.ProbMutation2)
                 
                 figlio2 = self.Mutation(figlio2, self.ProbMutation1, self.ProbMutation2)
+
+                #if random.random() <= 0.01 : 
+                #    figlio1 = self.RicercaLocale(figlio1)
+                #if random.random() <= 0.01 :
+                #    figlio2 = self.RicercaLocale(figlio2)
                 
-                if figlio1.Fitness < self.BestCandidateFitness:
-                    update, figlio1 = self.BestSol.UpdateSol(figlio1)
+                if figlio1.Fitness <= self.BestCandidateFitness:
+                    figlio1 = self.RicercaLocale(figlio1)
+                    if figlio1.Fitness < self.BestCandidateFitness:
+                        update, figlio1 = self.BestSol.UpdateSol(figlio1)
                 
-                if figlio2.Fitness < self.BestCandidateFitness:
-                    update, figlio2 = self.BestSol.UpdateSol(figlio2)
+                if figlio2.Fitness <= self.BestCandidateFitness:
+                    figlio2 = self.RicercaLocale(figlio2)
+                    if figlio2.Fitness < self.BestCandidateFitness:
+                        update, figlio2 = self.BestSol.UpdateSol(figlio2)
                     
                 poolfigli.append((figlio1, figlio2))
         
@@ -102,6 +105,7 @@ class GeneticAlg():
             print(avgfit)
 
         print(popfit)
+
     def Elite(self, NumElite):
         
         EliteArray = []
@@ -391,6 +395,92 @@ class GeneticAlg():
             self.BestCandidateFitness = self.BestSol.Makespan
 
         return
+
+    def RicercaLocale(self, candidate):
+
+        candidatetemp = Candidate(self.Inst, 1, 1)
+        
+        #bestCandidate = Candidate(self.Inst, 1, 1)
+        #bestCandidate.CopyCandidate(candidate)  
+        bestFitness = candidate.Fitness
+
+        bestCandidate = copy.deepcopy(candidate)
+
+        stop = False
+        niter = 0
+
+        while stop == False :
+
+            stop = True
+            niter = niter + 1
+
+            for i in range(len(candidate.Genotype)-1):
+
+                for j in range(i+1,len(candidate.Genotype)) :
+
+                    #candidatetemp.CopyCandidate(candidate)
+                    candidatetemp = copy.deepcopy(candidate)
+
+                    temp = candidatetemp.Genotype[i]
+                    candidatetemp.Genotype[i] = candidatetemp.Genotype[j]
+                    candidatetemp.Genotype[j] = temp
+                    candidatetemp.Fitness, candidatetemp.Makespan, candidatetemp.OverLoadMac, candidatetemp.Recharges = candidatetemp.ComputeFitness()
+
+                    if candidatetemp.Fitness < bestFitness :
+                        #bestCandidate.CopyCandidate(candidatetemp) 
+                        bestCandidate = copy.deepcopy(candidatetemp)
+                        bestFitness = candidatetemp.Fitness
+                        stop = False
+                        break
+
+                    #candidatetemp.CopyCandidate(candidate)
+                    candidatetemp = copy.deepcopy(candidate)
+
+                    temp1 = list(candidatetemp.Genotype[i])
+                    temp1[1] = candidatetemp.Genotype[j][1]
+                    candidatetemp.Genotype[i] = tuple(temp1)
+
+                    temp1 = list(candidatetemp.Genotype[j])
+                    temp1[1] = candidatetemp.Genotype[i][1]
+                    candidatetemp.Genotype[j] = tuple(temp1)
+                    
+                    candidatetemp.Fitness, candidatetemp.Makespan, candidatetemp.OverLoadMac, candidatetemp.Recharges = candidatetemp.ComputeFitness()
+
+                    if candidatetemp.Fitness < bestFitness :
+                        #bestCandidate.CopyCandidate(candidatetemp) 
+                        bestCandidate = copy.deepcopy(candidatetemp)
+                        bestFitness = candidatetemp.Fitness
+                        stop = False
+                if stop == False:
+                    break
+            
+            if stop == True :
+                for i in range(len(candidate.Genotype)):
+                    for m in range(self.Inst.NumMachines) :
+                        if m != candidate.Genotype[i][1] :
+
+                            #candidatetemp.CopyCandidate(candidate)
+                            candidatetemp = copy.deepcopy(candidate)
+
+                            temp1 = list(candidatetemp.Genotype[i])
+                            temp1[1] = m
+                            candidatetemp.Genotype[i] = tuple(temp1)
+
+                            candidatetemp.Fitness, candidatetemp.Makespan, candidatetemp.OverLoadMac, candidatetemp.Recharges = candidatetemp.ComputeFitness()
+
+                            if candidatetemp.Fitness < bestFitness :
+                                #bestCandidate.CopyCandidate(candidatetemp) 
+                                bestCandidate = copy.deepcopy(candidatetemp)
+                                bestFitness = candidatetemp.Fitness
+                                stop = False
+                                break
+                    if stop == False:
+                        break
+
+
+        return bestCandidate
+
+
 
 
 
