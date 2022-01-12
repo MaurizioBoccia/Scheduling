@@ -148,8 +148,10 @@ class Solution():
             self.BPmod.addConstrs(
                 (self.Gvar[i] - self.Gvar[i-1] <= 0  for i in range(1, int(ncharges))), "Sorting")
     
-            self.BPmod.write("BinPacking.lp")
-    
+            # self.BPmod.write("BinPacking.lp")
+            self.BPmod.Params.timelimit = 3.0
+            self.BPmod.update()
+     
             self.BPmod.optimize()
     
             self.LowerBound = 0

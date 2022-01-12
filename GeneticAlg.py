@@ -76,22 +76,27 @@ class GeneticAlg():
                 #if random.random() <= 0.01 :
                 #    figlio2 = self.RicercaLocale(figlio2)
                 
-                if figlio1.Fitness <= self.BestCandidateFitness:
-                    figlio1 = self.RicercaLocale(figlio1)
-                    if figlio1.Fitness < self.BestCandidateFitness:
-                        update, figlio1 = self.BestSol.UpdateSol(figlio1)
+                # if figlio1.Fitness <= self.BestCandidateFitness:
+                #     figlio1 = self.RicercaLocale(figlio1)
+                #     if figlio1.Fitness < self.BestCandidateFitness:
+                #         update, figlio1 = self.BestSol.UpdateSol(figlio1)
                 
-                if figlio2.Fitness <= self.BestCandidateFitness:
-                    figlio2 = self.RicercaLocale(figlio2)
-                    if figlio2.Fitness < self.BestCandidateFitness:
-                        update, figlio2 = self.BestSol.UpdateSol(figlio2)
+                # if figlio2.Fitness <= self.BestCandidateFitness:
+                #     figlio2 = self.RicercaLocale(figlio2)
+                #     if figlio2.Fitness < self.BestCandidateFitness:
+                #         update, figlio2 = self.BestSol.UpdateSol(figlio2)
                     
                 poolfigli.append((figlio1, figlio2))
         
         
             for i in poolfigli:
                 self.UpdatePopulation(i[0], i[1])
-                    
+                
+            # RicLoc Costa
+            popricloc=self.Elite(20)
+            for i in popricloc:
+                                
+                
             popfit = []
                     
             for i in self.Population:
