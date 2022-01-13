@@ -42,7 +42,7 @@ class SuperCandidate():
         
         self.Makespan = []
         self.Genotype, self.Fitness, self.Makespan, self.OverLoadMac, self.Recharges = self.ComputeCandidate(seme)
-        self.Codifica = 1
+        # self.Codifica = 1
         if self.Codifica == 1:
             self.Fitness, self.Makespan, self.OverLoadMac, self.Recharges = self.ComputeFitness()
         
@@ -74,7 +74,7 @@ class SuperCandidate():
             for i in idbest:
                 newbest.insert(0,i)
             idbest = newbest
-            
+
         for i in idbest:
             temp1 = -1
             temp2 = sum(dur[i] + self.Inst.ChargingTime for i in range(self.Inst.NumJobs))
@@ -112,6 +112,8 @@ class SuperCandidate():
                     emac[self.Genotype[i][1]] += self.Inst.Weight[self.Genotype[i][0]][self.Genotype[i][1]]
                     
                 tmac[self.Genotype[i][1]] += self.Inst.Dur[self.Genotype[i][0]][self.Genotype[i][1]]
+                
+
         elif Codifica == 1:
             for i in range(self.Inst.NumJobs):
                 lmac = -1

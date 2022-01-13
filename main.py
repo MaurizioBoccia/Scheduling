@@ -28,6 +28,7 @@ NumOfGen = 150
 NumOfIterationsPerGen = 20
 ProbMutation1 = 0.03
 ProbMutation2 = 0.03
+TimeLimit = 3000
 NumElite = 10
 #  Valore massimo pari a 3
 NumSuperCandidate = 3
@@ -35,5 +36,5 @@ NumSuperCandidate = 3
 NumSuperFigli = 5
 # Codifica 0 se nostra 1 se first release date di Costa
 Codifica = 0
-GA = GeneticAlg(Inst, PopSize, NumOfGen, NumOfIterationsPerGen, ProbMutation1, ProbMutation2, NumElite, NumSuperCandidate, NumSuperFigli, Codifica)
-print(GA.BestCandidateFitness)
+GA = GeneticAlg(Inst, PopSize, NumOfGen, NumOfIterationsPerGen, ProbMutation1, ProbMutation2, NumElite, NumSuperCandidate, NumSuperFigli, Codifica, TimeLimit)
+print(GA.BestCandidateFitness, "; ",GA.TimeR)

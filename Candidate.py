@@ -51,13 +51,15 @@ class Candidate():
         random.seed(semeran)
 
         arr = np.random.permutation(self.Inst.NumJobs)
-        
         for i in range(self.Inst.NumJobs): 
 
             random.seed(semeran + i)
 
             self.Genotype.append((arr[i], random.randint(0, self.Inst.NumMachines-1)))
-
+        # if semeran == 25:
+        
+        #     self.Genotype = [(23, 0), (34, 1), (36, 2), (18, 3), (12, 4), (25, 4), (27, 3), (14, 2), (29, 1), (40, 3), (22, 0), (24, 0), (41, 1), (46, 3), (19, 2), (42, 0), (49, 2), (3, 4), (45, 1), (4, 3), (20, 0), (6, 2), (16, 4), (26, 1), (33, 0), (32, 1), (17, 3), (28, 2), (43, 3), (35, 4), (37, 3), (5, 0), (21, 1), (9, 3), (13, 4), (39, 1), (31, 2), (15, 3), (38, 3), (8, 1), (7, 4), (44, 1), (1, 4), (11, 3), (47, 4), (30, 0), (2, 2), (48, 4), (10, 2), (0, 3)]
+       
         return
 
     def CopyCandidate(self, candidateor):

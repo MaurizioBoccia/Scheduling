@@ -24,7 +24,7 @@ from Solution import Solution
 from Candidate import Candidate
 from SuperCandidate import SuperCandidate
 
-
+import time
 import numpy as np
 import math 
 import random
@@ -33,8 +33,9 @@ import numpy
 
 class GeneticAlg():
 
-    def __init__(self, Inst, PopSize, NumOfGen, NumOfIterationsPerGen, ProbMutation1, ProbMutation2, NumElite, NumSuperCandidate, NumSuperFigli, Codifica):
-
+    def __init__(self, Inst, PopSize, NumOfGen, NumOfIterationsPerGen, ProbMutation1, ProbMutation2, NumElite, NumSuperCandidate, NumSuperFigli, Codifica, TimeLimit):
+        self.TimeR = time.perf_counter()
+        self.TimeLimit = TimeLimit
         self.Inst = Inst 
         self.PopSize = PopSize 
         self.NumOfGen = NumOfGen
@@ -59,7 +60,8 @@ class GeneticAlg():
             bestfit.append(self.BestCandidateFitness)
             
             poolfigli = []
-
+            if time.perf_counter()-self.TimeR > self.TimeLimit:
+                break
             for iter in range(self.NumOfIterationsPerGen) :
 
                 # Seleziona una coppia di genitori con il metodo Montecarlo
@@ -69,32 +71,39 @@ class GeneticAlg():
                 
                 figlio1 = self.Mutation(figlio1, self.ProbMutation1, self.ProbMutation2)
                 
+                figlio1.Fitness, figlio1.Makespan, figlio1.OverLoadMac, figlio1.Recharges = figlio1.ComputeFitness()
+                
                 figlio2 = self.Mutation(figlio2, self.ProbMutation1, self.ProbMutation2)
-
+                
+                figlio2.Fitness, figlio2.Makespan, figlio2.OverLoadMac, figlio2.Recharges = figlio2.ComputeFitness()
+                
                 #if random.random() <= 0.01 : 
                 #    figlio1 = self.RicercaLocale(figlio1)
                 #if random.random() <= 0.01 :
                 #    figlio2 = self.RicercaLocale(figlio2)
                 
-                # if figlio1.Fitness <= self.BestCandidateFitness:
+                if figlio1.Fitness <= self.BestCandidateFitness:
                 #     figlio1 = self.RicercaLocale(figlio1)
-                #     if figlio1.Fitness < self.BestCandidateFitness:
-                #         update, figlio1 = self.BestSol.UpdateSol(figlio1)
+                    if figlio1.Fitness < self.BestCandidateFitness:
+                        update, figlio1 = self.BestSol.UpdateSol(figlio1)
+                        print(figlio1.Recharges,";",figlio1.Makespan,";",figlio1.Genotype)
                 
-                # if figlio2.Fitness <= self.BestCandidateFitness:
+                if figlio2.Fitness <= self.BestCandidateFitness:
                 #     figlio2 = self.RicercaLocale(figlio2)
-                #     if figlio2.Fitness < self.BestCandidateFitness:
-                #         update, figlio2 = self.BestSol.UpdateSol(figlio2)
+                    if figlio2.Fitness < self.BestCandidateFitness:
+                        update, figlio2 = self.BestSol.UpdateSol(figlio2)
+                        print(figlio2.Recharges,";",figlio2.Makespan,";",figlio2.Genotype)
                     
                 poolfigli.append((figlio1, figlio2))
         
-        
+                if time.perf_counter()-self.TimeR > self.TimeLimit:
+                    break
             for i in poolfigli:
                 self.UpdatePopulation(i[0], i[1])
                 
             # RicLoc Costa
-            popricloc=self.Elite(20)
-            for i in popricloc:
+            # popricloc=self.Elite(20)
+            # for i in popricloc:
                                 
                 
             popfit = []
@@ -110,6 +119,7 @@ class GeneticAlg():
             print(avgfit)
 
         print(popfit)
+        self.TimeR = time.perf_counter()-self.TimeR  
 
     def Elite(self, NumElite):
         
@@ -206,8 +216,8 @@ class GeneticAlg():
         # print(genitore2.Genotype)
         # print(offspring1.Genotype)
         # print(offspring2.Genotype)
-            offspring1.Fitness, offspring1.Makespan, offspring1.OverLoadMac, offspring1.Recharges = offspring1.ComputeFitness()
-            offspring2.Fitness, offspring2.Makespan, offspring2.OverLoadMac, offspring2.Recharges = offspring2.ComputeFitness()
+            # offspring1.Fitness, offspring1.Makespan, offspring1.OverLoadMac, offspring1.Recharges = offspring1.ComputeFitness()
+            # offspring2.Fitness, offspring2.Makespan, offspring2.OverLoadMac, offspring2.Recharges = offspring2.ComputeFitness()
         return offspring1, offspring2
     
     def Mutation(self,offspring, threshold1, threshold2):
@@ -366,7 +376,7 @@ class GeneticAlg():
                 oldfit = CandidateTemp.Fitness
                 NewCandidateTemp = copy.deepcopy(CandidateTemp)
                 NewCandidateTemp = self.Mutation(NewCandidateTemp, 1, 1)
-                NewCandidateTemp.Fitness = NewCandidateTemp.ComputeFitness()[0]
+                NewCandidateTemp.Fitness, NewCandidateTemp.Makespan, NewCandidateTemp.OverLoadMac, NewCandidateTemp.Recharges = NewCandidateTemp.ComputeFitness()
                 if NewCandidateTemp.Fitness >= oldfit:
                     if NewCandidateTemp.Fitness < self.BestCandidateFitness :
                         self.BestCandidateInd = i*(noffsup+1) + j
@@ -377,7 +387,7 @@ class GeneticAlg():
                         oldfit = NewCandidateTemp.Fitness
                         oldcand = copy.deepcopy(NewCandidateTemp)
                         NewCandidateTemp = self.Mutation(NewCandidateTemp, 1, 1)
-                        NewCandidateTemp.Fitness = NewCandidateTemp.ComputeFitness()[0]
+                        NewCandidateTemp.Fitness, NewCandidateTemp.Makespan, NewCandidateTemp.OverLoadMac, NewCandidateTemp.Recharges = NewCandidateTemp.ComputeFitness()
                     if oldcand.Fitness < self.BestCandidateFitness :
                         self.BestCandidateInd = i*(noffsup+1) + j
                         self.BestCandidateFitness = oldcand.Fitness

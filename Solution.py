@@ -50,7 +50,8 @@ class Solution():
             machlist.insert(0, i)
         for i in machlist:
             stat, numchar, job2charges = self.BPP(ListOfJobs[i],Candidate.Recharges[i])
-            
+            if stat == -1:
+                print(Candidate)
             if stat == 1 and numchar < Candidate.Recharges[i]:
                 update = True
                 Candidate.Makespan[i] -= self.Inst.ChargingTime*(Candidate.Recharges[i] - numchar)
@@ -157,6 +158,11 @@ class Solution():
             self.LowerBound = 0
             self.Bin = []
             Step1Status = 0
+            
+            if self.BPmod.status == GRB.INFEASIBLE:
+                print("INFEASIBLE")
+                self.BPmod.write("BinPacking.lp")
+                Step1Status = -1
             
             if self.BPmod.status == GRB.OPTIMAL or self.BPmod.status == GRB.SUBOPTIMAL or self.BPmod.status == GRB.TIME_LIMIT:
     
