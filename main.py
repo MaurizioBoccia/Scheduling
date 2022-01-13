@@ -30,11 +30,12 @@ ProbMutation1 = 0.03
 ProbMutation2 = 0.03
 TimeLimit = 3000
 NumElite = 10
+NumLS= 10
 #  Valore massimo pari a 3
 NumSuperCandidate = 3
 # Numero figli per supercandidate
 NumSuperFigli = 5
 # Codifica 0 se nostra 1 se first release date di Costa
 Codifica = 0
-GA = GeneticAlg(Inst, PopSize, NumOfGen, NumOfIterationsPerGen, ProbMutation1, ProbMutation2, NumElite, NumSuperCandidate, NumSuperFigli, Codifica, TimeLimit)
+GA = GeneticAlg(Inst, PopSize, NumOfGen, NumOfIterationsPerGen, ProbMutation1, ProbMutation2, NumElite, NumSuperCandidate, NumSuperFigli, Codifica, NumLS, TimeLimit)
 print(GA.BestCandidateFitness, "; ",GA.TimeR)

@@ -33,7 +33,7 @@ import numpy
 
 class GeneticAlg():
 
-    def __init__(self, Inst, PopSize, NumOfGen, NumOfIterationsPerGen, ProbMutation1, ProbMutation2, NumElite, NumSuperCandidate, NumSuperFigli, Codifica, TimeLimit):
+    def __init__(self, Inst, PopSize, NumOfGen, NumOfIterationsPerGen, ProbMutation1, ProbMutation2, NumElite, NumSuperCandidate, NumSuperFigli, Codifica, NumLS, TimeLimit):
         self.TimeR = time.perf_counter()
         self.TimeLimit = TimeLimit
         self.Inst = Inst 
