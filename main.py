@@ -12,7 +12,7 @@ import random
 
 FileName = "Ins_V5_J50_T20_R60_B10_W4_S131_N1.txt"
 # FileName = "Ins_V5_J200_T20_R60_B10_W2_S314_N4.txt"
-#FileName = "Ins_V2_J10_T10_R60_B6_W1_S0_N0.txt"
+# FileName = "Ins_V2_J10_T10_R60_B6_W1_S0_N0.txt"
 # FileName = input()
 #FileName = sys.argv[1]
 
@@ -28,7 +28,7 @@ NumOfGen = 150
 NumOfIterationsPerGen = 20
 ProbMutation1 = 0.03
 ProbMutation2 = 0.03
-TimeLimit = 3000
+TimeLimit = 30
 NumElite = 10
 NumLS= 10
 #  Valore massimo pari a 3
