@@ -63,6 +63,7 @@ class GeneticAlg():
             if time.perf_counter()-self.TimeR > self.TimeLimit:
                 break
             for iter in range(self.NumOfIterationsPerGen) :
+                
 
                 # Seleziona una coppia di genitori con il metodo Montecarlo
                 genitore1, genitore2 = self.SelezioneMontecarlo()
@@ -98,27 +99,30 @@ class GeneticAlg():
         
                 if time.perf_counter()-self.TimeR > self.TimeLimit:
                     break
+            
+
             for i in poolfigli:
                 self.UpdatePopulation(i[0], i[1])
+                
                 
             # RicLoc Costa
             # popricloc=self.Elite(20)
             # for i in popricloc:
                                 
                 
-            popfit = []
+            # popfit = []
                     
-            for i in self.Population:
-                popfit.append(i.Fitness)
-                # print(popfit)
-                # print(sum(popfit)/len(popfit))
+            # for i in self.Population:
+            #     popfit.append(i.Fitness)
+            #     # print(popfit)
+            #     # print(sum(popfit)/len(popfit))
                     
-            avgfit.append(sum(popfit)/len(popfit))
+            # avgfit.append(sum(popfit)/len(popfit))
         
-            print(bestfit)
-            print(avgfit)
+            # print(bestfit)
+            # print(avgfit)
 
-        print(popfit)
+        # print(popfit)
         self.TimeR = time.perf_counter()-self.TimeR  
 
     def Elite(self, NumElite):
@@ -131,6 +135,9 @@ class GeneticAlg():
         
         for i in range(NumElite):
             EliteArray.append(idbest[i])
+            
+        if self.BestCandidateInd not in EliteArray:
+            EliteArray[NumElite-1]=self.BestCandidateInd
 
         return EliteArray
 
@@ -300,6 +307,8 @@ class GeneticAlg():
             FitnessCum.append(FitnessCum[i-1] + self.Population[i].Fitness)
 
         EliteArray = self.Elite(self.NumElite)
+        
+
 
         # individua moribondo 1 e lo sostituisce con figlio 1
         moribondo1 = -1
@@ -310,7 +319,7 @@ class GeneticAlg():
             found = False
             if first <= FitnessCum[0] :
                 if 0 not in EliteArray :
-                    self.Population[0] = figlio1
+                    self.Population[0] = copy.deepcopy(figlio1)
                     if figlio1.Fitness < self.BestCandidateFitness:
                         self.BestCandidateInd = 0
                         self.BestCandidateFitness = figlio1.Fitness   
@@ -321,7 +330,7 @@ class GeneticAlg():
             while not found :
                 if first <= FitnessCum[i] :
                     if i not in EliteArray :
-                        self.Population[i] = figlio1
+                        self.Population[i] = copy.deepcopy(figlio1)
                         if figlio1.Fitness < self.BestCandidateFitness:
                             self.BestCandidateInd = i
                             self.BestCandidateFitness = figlio1.Fitness   
@@ -329,7 +338,8 @@ class GeneticAlg():
                         stop = True
                     found = True
                 i = i + 1
-
+        
+        
         # individua moribondo 2 e lo sostituisce con figlio 2
         stop = False
         while not stop :
@@ -337,7 +347,7 @@ class GeneticAlg():
             found = False
             if second <= FitnessCum[0] :
                 if 0 not in EliteArray and moribondo1 != 0:
-                    self.Population[0] = figlio2
+                    self.Population[0] = copy.deepcopy(figlio2)
                     if figlio2.Fitness < self.BestCandidateFitness:
                         self.BestCandidateInd = 0
                         self.BestCandidateFitness = figlio2.Fitness   
@@ -348,7 +358,7 @@ class GeneticAlg():
             while not found :
                 if second <= FitnessCum[i] :
                     if i not in EliteArray and moribondo1 != i:
-                        self.Population[i] = figlio2
+                        self.Population[i] = copy.deepcopy(figlio2)
                         if figlio2.Fitness < self.BestCandidateFitness:
                             self.BestCandidateInd = i
                             self.BestCandidateFitness = figlio2.Fitness   
@@ -356,7 +366,9 @@ class GeneticAlg():
                         stop = True
                     found = True
                 i = i + 1
+        
 
+        
         return
 
     def GenInitialPopulation(self):
@@ -368,9 +380,9 @@ class GeneticAlg():
         for i in range(self.nsupcand):
             CandidateTemp = SuperCandidate(self.Inst,i, self.Codifica)
             if CandidateTemp.Fitness < self.BestCandidateFitness :
-                    self.BestCandidateInd = i*(noffsup+1)
+                    self.BestCandidateInd = len(self.Population)
                     self.BestCandidateFitness = CandidateTemp.Fitness
-            self.Population.append(CandidateTemp)
+            self.Population.append(copy.deepcopy(CandidateTemp))
             # inserimento supercandidati modificati
             for j in range(noffsup):
                 oldfit = CandidateTemp.Fitness
@@ -379,9 +391,9 @@ class GeneticAlg():
                 NewCandidateTemp.Fitness, NewCandidateTemp.Makespan, NewCandidateTemp.OverLoadMac, NewCandidateTemp.Recharges = NewCandidateTemp.ComputeFitness()
                 if NewCandidateTemp.Fitness >= oldfit:
                     if NewCandidateTemp.Fitness < self.BestCandidateFitness :
-                        self.BestCandidateInd = i*(noffsup+1) + j
+                        self.BestCandidateInd = len(self.Population)
                         self.BestCandidateFitness = NewCandidateTemp.Fitness
-                    self.Population.append(NewCandidateTemp)
+                    self.Population.append(copy.deepcopy(NewCandidateTemp))
                 else:
                     while NewCandidateTemp.Fitness < oldfit:
                         oldfit = NewCandidateTemp.Fitness
@@ -389,26 +401,24 @@ class GeneticAlg():
                         NewCandidateTemp = self.Mutation(NewCandidateTemp, 1, 1)
                         NewCandidateTemp.Fitness, NewCandidateTemp.Makespan, NewCandidateTemp.OverLoadMac, NewCandidateTemp.Recharges = NewCandidateTemp.ComputeFitness()
                     if oldcand.Fitness < self.BestCandidateFitness :
-                        self.BestCandidateInd = i*(noffsup+1) + j
+                        self.BestCandidateInd = len(self.Population)
                         self.BestCandidateFitness = oldcand.Fitness
-                    self.Population.append(oldcand)
-                
+                    self.Population.append(copy.deepcopy(oldcand))
 
-        for i in range(self.nsupcand*(noffsup+1),self.PopSize) :
+        for i in range(len(self.Population),self.PopSize) :
             CandidateTemp = Candidate(self.Inst, i, self.Codifica)
             if CandidateTemp.Fitness < self.BestCandidateFitness :
-                self.BestCandidateInd = i
+                self.BestCandidateInd = len(self.Population)
                 self.BestCandidateFitness = CandidateTemp.Fitness
 
-            self.Population.append(CandidateTemp)
-
+            self.Population.append(copy.deepcopy(CandidateTemp))
         # preleva la migliore soluzione, la riottimizza risolvendo un problema di bin packing per ogni macchina
         #  e la memorizza in solution
         self.BestSol = Solution(self.Inst,self.Population[self.BestCandidateInd],self.Codifica)
         if self.BestSol.Makespan < self.BestCandidateFitness:
-            self.Population[self.BestCandidateInd] = self.BestSol.Candidate
+            self.Population[self.BestCandidateInd] = copy.deepcopy(self.BestSol.Candidate)
             self.BestCandidateFitness = self.BestSol.Makespan
-
+            self.Population[self.BestCandidateInd].Fitness, self.Population[self.BestCandidateInd].Makespan, self.Population[self.BestCandidateInd].OverLoadMac, self.Population[self.BestCandidateInd].Recharges = self.Population[self.BestCandidateInd].ComputeFitness()
         return
 
     def RicercaLocale(self, candidate):
