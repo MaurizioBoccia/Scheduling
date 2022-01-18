@@ -48,6 +48,7 @@ class GeneticAlg():
         self.nsupcand = NumSuperCandidate
         self.NumSuperFigli = NumSuperFigli
         self.Codifica = Codifica
+        self.NumLS = NumLS
         # genera la popolazione iniziale
         self.GenInitialPopulation()
 
@@ -87,13 +88,13 @@ class GeneticAlg():
                 #     figlio1 = self.RicercaLocale(figlio1)
                     if figlio1.Fitness < self.BestCandidateFitness:
                         update, figlio1 = self.BestSol.UpdateSol(figlio1)
-                        print(figlio1.Recharges,";",figlio1.Makespan,";",figlio1.Genotype)
+                        # print(figlio1.Recharges,";",figlio1.Makespan,";",figlio1.Genotype)
                 
                 if figlio2.Fitness <= self.BestCandidateFitness:
                 #     figlio2 = self.RicercaLocale(figlio2)
                     if figlio2.Fitness < self.BestCandidateFitness:
                         update, figlio2 = self.BestSol.UpdateSol(figlio2)
-                        print(figlio2.Recharges,";",figlio2.Makespan,";",figlio2.Genotype)
+                        # print(figlio2.Recharges,";",figlio2.Makespan,";",figlio2.Genotype)
                     
                 poolfigli.append((figlio1, figlio2))
         
@@ -104,7 +105,25 @@ class GeneticAlg():
             for i in poolfigli:
                 self.UpdatePopulation(i[0], i[1])
                 
-                
+            # Miglioramento popolazione con Local Search
+            LSArray = self.Elite(self.NumLS)
+            for i in LSArray:
+                if self.Codifica == 0:
+                    self.Population[i] = copy.deepcopy(self.RicercaLocale(self.Population[i]))
+                    if self.Population[i].Fitness < self.BestCandidateFitness:
+                        self.BestCandidateFitness = self.Population[i].Fitness
+                        self.BestCandidateInd = i
+                        update, figlio1 = self.BestSol.UpdateSol(figlio1)
+                else:
+                    self.Population[i] = copy.deepcopy(self.RicercaCosta(self.Population[i]))
+                    if self.Population[i].Fitness < self.BestCandidateFitness:
+                        self.BestCandidateFitness = self.Population[i].Fitness
+                        self.BestCandidateInd = i
+                if time.perf_counter()-self.TimeR > self.TimeLimit:
+                    break
+  
+                    
+            
             # RicLoc Costa
             # popricloc=self.Elite(20)
             # for i in popricloc:
@@ -501,6 +520,30 @@ class GeneticAlg():
                                 break
                     if stop == False:
                         break
+
+
+        return bestCandidate
+    
+    def RicercaCosta(self, candidate):
+
+        bestCandidate = copy.deepcopy(candidate)
+        stop = False
+        niter = 0
+        
+        NewCandidateTemp = copy.deepcopy(candidate)
+        while stop == False :
+            stop = True
+            niter = niter + 1
+            oldfit = NewCandidateTemp.Fitness
+            temp =  copy.deepcopy(NewCandidateTemp)
+            NewCandidateTemp = self.Mutation(NewCandidateTemp, 1, 1)
+            NewCandidateTemp.Fitness, NewCandidateTemp.Makespan, NewCandidateTemp.OverLoadMac, NewCandidateTemp.Recharges = NewCandidateTemp.ComputeFitness()
+        if NewCandidateTemp.Fitness <= oldfit:
+            bestCandidate = copy.deepcopy(NewCandidateTemp)
+            if niter <= 5: 
+                stop = False
+        else:
+            bestCandidate = copy.deepcopy(temp)
 
 
         return bestCandidate

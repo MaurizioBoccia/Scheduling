@@ -22,6 +22,7 @@ from Instance import Instance
 import gurobipy as gp
 from gurobipy import GRB
 import numpy
+import copy
 
 class Solution():
 
@@ -31,7 +32,11 @@ class Solution():
         
         self.Codifica = Codifica
         
-        update, self.Candidate = self.UpdateSol(Candidate)
+        self.Candidate = copy.deepcopy(Candidate)
+        
+        if self.Codifica == 0:
+        
+            update, self.Candidate = self.UpdateSol(Candidate)
         
         self.Makespan = self.Candidate.Fitness
      
@@ -39,37 +44,37 @@ class Solution():
 
         update = False
         
-
-        ListOfJobs = self.ComputeListofJobs(Candidate)
-            
-        # print(self.Candidate.Genotype)
-        Step1Status = 0
-        machlist =  []
-        
-        for i in numpy.argsort(Candidate.Makespan):
-            machlist.insert(0, i)
-        for i in machlist:
-            stat, numchar, job2charges = self.BPP(ListOfJobs[i],Candidate.Recharges[i])
-            if stat == -1:
-                print(Candidate)
-            if stat == 1 and numchar < Candidate.Recharges[i]:
-                update = True
-                Candidate.Makespan[i] -= self.Inst.ChargingTime*(Candidate.Recharges[i] - numchar)
-                Candidate.Recharges[i] = numchar
+        if self.Codifica == 0:
+            ListOfJobs = self.ComputeListofJobs(Candidate)
                 
-                orderedj = []
-                for j in job2charges:
-                    for k in j:
-                        orderedj.append(k)
-                cont = 0
-                for j in range(len(Candidate.Genotype)):
-                    if Candidate.Genotype[j][1] == i:
-                        Candidate.Genotype[j] = (orderedj[cont], i)
-                        cont+=1
-            else: 
-                break
-        if update == True:
-            Candidate.Fitness = max(Candidate.Makespan)
+            # print(self.Candidate.Genotype)
+            Step1Status = 0
+            machlist =  []
+            
+            for i in numpy.argsort(Candidate.Makespan):
+                machlist.insert(0, i)
+            for i in machlist:
+                stat, numchar, job2charges = self.BPP(ListOfJobs[i],Candidate.Recharges[i])
+                if stat == -1:
+                    print(Candidate)
+                if stat == 1 and numchar < Candidate.Recharges[i]:
+                    update = True
+                    Candidate.Makespan[i] -= self.Inst.ChargingTime*(Candidate.Recharges[i] - numchar)
+                    Candidate.Recharges[i] = numchar
+                    
+                    orderedj = []
+                    for j in job2charges:
+                        for k in j:
+                            orderedj.append(k)
+                    cont = 0
+                    for j in range(len(Candidate.Genotype)):
+                        if Candidate.Genotype[j][1] == i:
+                            Candidate.Genotype[j] = (orderedj[cont], i)
+                            cont+=1
+                else: 
+                    break
+            if update == True:
+                Candidate.Fitness = max(Candidate.Makespan)
 
         return update, Candidate
     
